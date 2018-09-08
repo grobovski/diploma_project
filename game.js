@@ -163,15 +163,18 @@ class Level{
   }
   
   isFinished(){
-    if(status !== null && finishDelay < 0){
+    if(this.status !== null && this.finishDelay < 0){
       return true;
     }
     return false;
   }
   
   actorAt(actor){
-
+      
       if( actor instanceof Actor &&  actor ){
+        if(!this.actors){
+            return undefined;
+        }  
         return this.actors.find( 
           (act) => { 
             return  actor.isIntersect(act) ;
@@ -186,21 +189,22 @@ class Level{
   obstacleAt(vector, size){
 
       if( vector instanceof Vector &&  vector && size instanceof Vector && size ){
+        const left = Math.floor(vector.x);
+        const top = Math.floor(vector.y);
+        const right = Math.ceil(vector.plus(size).x);
+        const bottom = Math.ceil(vector.plus(size).y);
         
-        let vectorSize = vector.plus(size);
-        vector;
-
-        for( let x = vector.x ; x <= vectorSize.x ; x++ ){
-          for(let y = vector.y ; y <= vectorSize.y ; y++){
+        if(right > this.width || left < 0 || top < 0){
+          return 'wall';
+        }
+        if(bottom > this.height){
+          return 'lava';
+        }
+        for( let x = top ; x < bottom ; x++ ){
+          for(let y = left ; y < right ; y++){
             if(this.grid[x][y])
               return this.grid[x][y];
           }
-        }
-        if(vectorSize.y > this.width){
-          return 'lava';
-        }
-        if(vectorSize.x > this.height){
-          return 'wall';
         }
 
         return undefined;
@@ -218,23 +222,31 @@ class Level{
   }
 
   noMoreActors(type){
-
-    return this.actors.find( 
+    if( !this.actors){
+          return true
+      }  
+    let actor = this.actors.find( 
       (actorOne) => { 
-        if( actorOne.type === type )
-         return true; 
+        if( actorOne.type === type ){
+          return true; 
+        }
+         
       } 
     );
-
-    return false;
+    
+    if(actor){
+        return false;
+    }
+    return true;
   }
   playerTouched( obstacle, actor){
     if( this.status === null){
-      if( obstacle === 'lava' && obstacle === 'fireball' ){
+      if( obstacle === 'lava' || obstacle === 'fireball' ){
         this.status = 'lost';
       }
       if( obstacle === 'coin' ){
         this.removeActor(actor);
+        
         if(this.noMoreActors(obstacle)){
           this.status = 'won';
         }
@@ -262,7 +274,7 @@ const player = new Actor();
 const fireball = new Actor();
 
 const level = new Level(grid, [ goldCoin, bronzeCoin, player, fireball ]);
-console.log(level.player);
+
 level.playerTouched('coin', goldCoin);
 level.playerTouched('coin', bronzeCoin);
 
