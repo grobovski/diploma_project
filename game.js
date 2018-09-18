@@ -361,30 +361,6 @@ class Player extends Actor{
   }
 }
 
-//////////////
-const schemas2 = [
-  [
-    '         ',
-    '         ',
-    '    =    ',
-    '       o ',
-    '     !xxx',
-    ' @       ',
-    'xxx!     ',
-    '         '
-  ],
-  [
-    '      v  ',
-    '    |    ',
-    '  v      ',
-    '        o',
-    '        x',
-    '@  xxx   ',
-    'x        ',
-    '         '
-  ]
-];
-
 const actorDict = {
   '@': Player,
   'v': FireRain,
